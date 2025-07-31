@@ -12,7 +12,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
 
                         <div class="md:col-span-2">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">Informasi Survei</h3>
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">Informasi Dasar</h3>
                         </div>
 
                         <div>
@@ -23,7 +23,10 @@
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Tanggal Survei</dt>
                             <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ \Carbon\Carbon::parse($survey->tanggal_survey)->isoFormat('DD MMMM YYYY') }}</dd>
                         </div>
-
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Petugas Survei</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->petugasSurvey->nama ?? 'N/A' }}</dd>
+                        </div>
                          <div class="md:col-span-2">
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Terkait Permohonan</dt>
                             <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
@@ -33,6 +36,46 @@
                             </dd>
                         </div>
 
+                        <div class="md:col-span-2 pt-6">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">Hasil Survei</h3>
+                        </div>
+
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Hasil</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->hasil_survey }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Koordinat Survei</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->koordinat_survey ?? '-' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Kebutuhan JUTR</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->kebutuhan_jutr ? $survey->kebutuhan_jutr . ' meter' : '-' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Kebutuhan Trafo</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->kebutuhan_trafo ? $survey->kebutuhan_trafo . ' kVA' : '-' }}</dd>
+                        </div>
+                         <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Kebutuhan JUTM</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->kebutuhan_jutm ? $survey->kebutuhan_jutm . ' meter' : '-' }}</dd>
+                        </div>
+                        <div class="md:col-span-2">
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Detail Kebutuhan</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap">{{ $survey->detail_kebutuhan ?? '-' }}</dd>
+                        </div>
+                         <div class="md:col-span-2">
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Keterangan</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap">{{ $survey->keterangan ?? '-' }}</dd>
+                        </div>
+
+                        <!-- Lampiran -->
+                        @if ($survey->foto_survey || $survey->gambar_survey)
+                        <div class="md:col-span-2 pt-6">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">Lampiran</h3>
+                        </div>
+                        @endif
+
                         @if ($survey->foto_survey)
                         <div class="md:col-span-2">
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Foto Hasil Survei</dt>
@@ -40,6 +83,18 @@
                                 <img src="{{ Storage::url($survey->foto_survey) }}" alt="Foto Hasil Survei" class="rounded-lg border dark:border-gray-700 w-full object-contain">
                                 <a href="{{ Storage::url($survey->foto_survey) }}" download class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
                                     Unduh Foto
+                                </a>
+                            </dd>
+                        </div>
+                        @endif
+                        
+                        @if ($survey->gambar_survey)
+                        <div class="md:col-span-2">
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Gambar Survei (PDF)</dt>
+                            <dd class="mt-2 space-y-2">
+                                <iframe src="{{ Storage::url($survey->gambar_survey) }}" class="w-full h-96 rounded-lg border dark:border-gray-700"></iframe>
+                                <a href="{{ Storage::url($survey->gambar_survey) }}" download class="inline-flex items-center px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                                    Unduh Gambar (PDF)
                                 </a>
                             </dd>
                         </div>

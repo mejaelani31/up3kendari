@@ -45,22 +45,22 @@
         </div>
 
         <!-- Kebutuhan Material (Kondisional) -->
-        @if(in_array($hasil_survey, ['PERLUASAN JUTR', 'PERLUASAN JUTR DAN UPRATING TRAFO']))
-        <div class="col-span-6 sm:col-span-2">
+        @if(in_array($hasil_survey, ['PERLUASAN JUTR', 'PERLUASAN JUTR DAN UPRATING TRAFO', 'SISIP TRAFO', 'PERLUASAN JUTM']))
+        <div class="col-span-6">
             <x-label for="kebutuhan_jutr" value="{{ __('Kebutuhan JUTR (meter)') }}" />
             <x-input id="kebutuhan_jutr" type="number" class="mt-1 block w-full" wire:model="kebutuhan_jutr" />
             <x-input-error for="kebutuhan_jutr" class="mt-2" />
         </div>
         @endif
-        @if(in_array($hasil_survey, ['UPRATING TRAFO', 'PERLUASAN JUTR DAN UPRATING TRAFO', 'SISIP TRAFO']))
-        <div class="col-span-6 sm:col-span-2">
+        @if(in_array($hasil_survey, ['UPRATING TRAFO', 'PERLUASAN JUTR DAN UPRATING TRAFO', 'SISIP TRAFO', 'PERLUASAN JUTM']))
+        <div class="col-span-6">
             <x-label for="kebutuhan_trafo" value="{{ __('Kebutuhan Trafo (kVA)') }}" />
             <x-input id="kebutuhan_trafo" type="number" class="mt-1 block w-full" wire:model="kebutuhan_trafo" />
             <x-input-error for="kebutuhan_trafo" class="mt-2" />
         </div>
         @endif
         @if(in_array($hasil_survey, ['PERLUASAN JUTM']))
-        <div class="col-span-6 sm:col-span-2">
+        <div class="col-span-6">
             <x-label for="kebutuhan_jutm" value="{{ __('Kebutuhan JUTM (meter)') }}" />
             <x-input id="kebutuhan_jutm" type="number" class="mt-1 block w-full" wire:model="kebutuhan_jutm" />
             <x-input-error for="kebutuhan_jutm" class="mt-2" />
@@ -70,24 +70,47 @@
         <!-- Detail & Keterangan -->
         <div class="col-span-6">
             <x-label for="detail_kebutuhan" value="{{ __('Detail Kebutuhan Material') }}" />
-            <textarea id="detail_kebutuhan" wire:model="detail_kebutuhan" rows="3" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm"></textarea>
+            <textarea id="detail_kebutuhan" wire:model="detail_kebutuhan" rows="3" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm" placeholder="Contoh: Tiang Beton 9: 2 Buah; Tiang Beton 13: 3 Buah Dll ...."></textarea>
+             <x-input-error for="detail_kebutuhan" class="mt-2" />
         </div>
         <div class="col-span-6">
             <x-label for="keterangan" value="{{ __('Keterangan Tambahan') }}" />
-            <textarea id="keterangan" wire:model="keterangan" rows="3" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm"></textarea>
+            <textarea id="keterangan" wire:model="keterangan" rows="3" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm" placeholder="Contoh: Tidak Bisa Tiang Beton, Dll ..."></textarea>
         </div>
 
         <!-- Upload Berkas -->
-        <div class="col-span-6 sm:col-span-3">
+        <div class="col-span-6">
             <x-label for="foto_survey" value="{{ __('Foto Hasil Survei (JPG/PNG)') }}" />
             <input wire:model="foto_survey" accept="image/png, image/jpeg" class="block w-full text-sm p-2.5 text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 mt-1" id="foto_survey" type="file">
-            @if (is_object($foto_survey)) <img src="{{ $foto_survey->temporaryUrl() }}" class="mt-2 rounded-md object-cover h-32"> @elseif($survey->foto_survey) <img src="{{ Storage::url($survey->foto_survey) }}" class="mt-2 rounded-md object-cover h-32"> @endif
+            <div wire:loading wire:target="foto_survey" class="text-sm text-gray-500 mt-1">Mengunggah...</div>
+            <div class="mt-2">
+                @if (is_object($foto_survey) && method_exists($foto_survey, 'temporaryUrl'))
+                    <img src="{{ $foto_survey->temporaryUrl() }}" class="rounded-md w-full h-auto object-contain">
+                @elseif($survey->foto_survey)
+                    <img src="{{ Storage::url($survey->foto_survey) }}" class="rounded-md w-full h-auto object-contain">
+                @endif
+            </div>
             <x-input-error for="foto_survey" class="mt-2" />
         </div>
-        <div class="col-span-6 sm:col-span-3">
+        
+        <div class="col-span-6" x-data="{ pdfPreviewUrl: '' }">
             <x-label for="gambar_survey" value="{{ __('Gambar Survei (PDF)') }}" />
-            <input wire:model="gambar_survey" accept=".pdf" class="block w-full text-sm p-2.5 text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 mt-1" id="gambar_survey" type="file">
-            @if ($survey->gambar_survey) <a href="{{ Storage::url($survey->gambar_survey) }}" target="_blank" class="text-sm text-indigo-500 hover:underline mt-2 inline-block">Lihat Gambar Tersimpan</a> @endif
+            <input 
+                wire:model="gambar_survey" 
+                @change="pdfPreviewUrl = $event.target.files.length ? URL.createObjectURL($event.target.files[0]) : ''"
+                accept=".pdf" 
+                class="block w-full text-sm p-2.5 text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 mt-1" 
+                id="gambar_survey" 
+                type="file">
+            <div wire:loading wire:target="gambar_survey" class="text-sm text-gray-500 mt-1">Mengunggah...</div>
+            <div class="mt-2">
+                <template x-if="pdfPreviewUrl">
+                    <iframe :src="pdfPreviewUrl" class="w-full h-96 rounded-md border border-gray-300 dark:border-gray-600"></iframe>
+                </template>
+                <template x-if="!pdfPreviewUrl && '{{ $survey->gambar_survey }}'">
+                    <iframe src="{{ Storage::url($survey->gambar_survey) }}" class="w-full h-96 rounded-md border border-gray-300 dark:border-gray-600"></iframe>
+                </template>
+            </div>
             <x-input-error for="gambar_survey" class="mt-2" />
         </div>
 

@@ -39,6 +39,7 @@ class Form extends Component
         $this->survey = $survey ?: new Survey();
 
         if ($this->survey->exists) {
+            // PERBAIKAN #1: Hanya isi properti selain unggahan berkas.
             $this->fill($this->survey->only([
                 'no_survey', 'tanggal_survey', 'petugas_survey_id', 'koordinat_survey',
                 'hasil_survey', 'kebutuhan_jutr', 'kebutuhan_trafo', 'kebutuhan_jutm',
@@ -76,17 +77,20 @@ class Form extends Component
             'hasil_survey' => 'required|string',
             'foto_survey' => 'nullable|image|max:2048',
             'gambar_survey' => 'nullable|mimes:pdf|max:5120',
-            'kebutuhan_jutr' => 'required_if:hasil_survey,PERLUASAN JUTR|required_if:hasil_survey,PERLUASAN JUTR DAN UPRATING TRAFO|nullable|integer',
-            'kebutuhan_trafo' => 'required_if:hasil_survey,UPRATING TRAFO|required_if:hasil_survey,PERLUASAN JUTR DAN UPRATING TRAFO|required_if:hasil_survey,SISIP TRAFO|nullable|integer',
+            'detail_kebutuhan' => 'required_unless:hasil_survey,LAYAK SAMBUNG|nullable|string',
+            'kebutuhan_jutr' => 'required_if:hasil_survey,PERLUASAN JUTR|required_if:hasil_survey,PERLUASAN JUTR DAN UPRATING TRAFO|required_if:hasil_survey,SISIP TRAFO|required_if:hasil_survey,PERLUASAN JUTM|nullable|integer',
+            'kebutuhan_trafo' => 'required_if:hasil_survey,UPRATING TRAFO|required_if:hasil_survey,PERLUASAN JUTR DAN UPRATING TRAFO|required_if:hasil_survey,SISIP TRAFO|required_if:hasil_survey,PERLUASAN JUTM|nullable|integer',
             'kebutuhan_jutm' => 'required_if:hasil_survey,PERLUASAN JUTM|nullable|integer',
-            'detail_kebutuhan' => 'nullable|string',
             'keterangan' => 'nullable|string',
         ];
     }
 
     public function save()
     {
-        $dataToSave = $this->validate();
+        $validatedData = $this->validate();
+        
+        // PERBAIKAN #2: Siapkan data untuk disimpan, KECUALI field berkas.
+        $dataToSave = collect($validatedData)->except(['foto_survey', 'gambar_survey'])->toArray();
 
         if ($this->foto_survey) {
             if ($this->survey->foto_survey) Storage::disk('public')->delete($this->survey->foto_survey);
@@ -112,7 +116,6 @@ class Form extends Component
         session()->flash('success', 'Data survei berhasil disimpan.');
         return redirect()->route('permohonans.show', $this->permohonan);
     }
-
 
     public function render()
     {
