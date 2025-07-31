@@ -5,6 +5,7 @@ use App\Http\Controllers\CompanyUnitController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\PermohonanController;
 use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\SpbjController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -40,6 +41,13 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified','a
     Route::get('/permohonans/{permohonan}/surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
     Route::get('/surveys/{survey}', [SurveyController::class, 'show'])->name('surveys.show');
     Route::get('/surveys/{survey}/edit', [SurveyController::class, 'edit'])->name('surveys.edit');
+});
+
+Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified','activated'])->group(function () {
+    Route::get('/spbjs', [SpbjController::class, 'index'])->name('spbjs.index');
+    Route::get('/spbjs/create', [SpbjController::class, 'create'])->name('spbjs.create');
+    Route::get('/spbjs/{spbj}', [SpbjController::class, 'show'])->name('spbjs.show');
+    Route::get('/spbjs/{spbj}/edit', [SpbjController::class, 'edit'])->name('spbjs.edit');
 });
 
 Route::get('/pending-approval', function () {
