@@ -7,11 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 shadow-xl sm:rounded-lg">
-                {{-- Memanggil komponen form Livewire untuk membuat survei baru --}}
-                {{-- Variabel $permohonan dikirim dari SurveyController@create --}}
-                @livewire('survey.form', ['permohonan' => $permohonan])
-            </div>
+            @livewire('survey.form', ['permohonan' => $permohonan])
         </div>
     </div>
 </x-app-layout>

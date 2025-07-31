@@ -16,8 +16,6 @@ class Survey extends Model
         'no_survey',
         'tanggal_survey',
         'foto_survey',
-        'unit_role',
-        // Kolom baru
         'petugas_survey_id',
         'koordinat_survey',
         'hasil_survey',
@@ -27,6 +25,10 @@ class Survey extends Model
         'kebutuhan_jutm',
         'detail_kebutuhan',
         'keterangan',
+        'user_email',
+        'employee_nip',
+        'unit_role',
+        'company_unit_name',
     ];
 
     /**

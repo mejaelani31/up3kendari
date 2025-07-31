@@ -6,6 +6,7 @@ use App\Models\Employee;
 use App\Models\Permohonan;
 use App\Models\Survey;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -39,7 +40,6 @@ class Form extends Component
         $this->survey = $survey ?: new Survey();
 
         if ($this->survey->exists) {
-            // PERBAIKAN #1: Hanya isi properti selain unggahan berkas.
             $this->fill($this->survey->only([
                 'no_survey', 'tanggal_survey', 'petugas_survey_id', 'koordinat_survey',
                 'hasil_survey', 'kebutuhan_jutr', 'kebutuhan_trafo', 'kebutuhan_jutm',
@@ -89,7 +89,6 @@ class Form extends Component
     {
         $validatedData = $this->validate();
         
-        // PERBAIKAN #2: Siapkan data untuk disimpan, KECUALI field berkas.
         $dataToSave = collect($validatedData)->except(['foto_survey', 'gambar_survey'])->toArray();
 
         if ($this->foto_survey) {
@@ -107,8 +106,15 @@ class Form extends Component
         if ($this->survey->exists) {
             $this->survey->update($dataToSave);
         } else {
+            $user = Auth::user();
+            $employee = $user->employee;
+
             $dataToSave['permohonan_id'] = $this->permohonan->id;
             $dataToSave['unit_role'] = $this->permohonan->unit_role;
+            $dataToSave['company_unit_name'] = $this->permohonan->company_unit_name;
+            $dataToSave['user_email'] = $user->email;
+            $dataToSave['employee_nip'] = $employee->nip;
+
             Survey::create($dataToSave);
             $this->permohonan->update(['status_survey' => '10: Survey Selesai']);
         }
@@ -119,7 +125,6 @@ class Form extends Component
 
     public function render()
     {
-        // Ambil daftar karyawan yang berada di bawah unit_role permohonan
         $petugasOptions = Employee::where('unit_role', 'like', $this->permohonan->unit_role . '%')
                                   ->orderBy('nama')
                                   ->get();

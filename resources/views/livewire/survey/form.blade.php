@@ -1,9 +1,6 @@
 <x-form-section submit="save">
     <x-slot name="title">{{ __('Data Survei') }}</x-slot>
-    <x-slot name="description">
-        {{ __('Input hasil survei untuk permohonan ') }} 
-        <span class="font-bold">{{ $permohonan->nama_pemohon }}</span>.
-    </x-slot>
+    <x-slot name="description">{{ __('Input hasil survei untuk permohonan ') }}<span class="font-bold">{{ $permohonan->nama_pemohon }}</span></x-slot>
 
     <x-slot name="form">
         <!-- Info Dasar -->
@@ -122,4 +119,5 @@
         </a>
         <x-button class="ms-3">{{ __('Simpan Survei') }}</x-button>
     </x-slot>
+
 </x-form-section>
