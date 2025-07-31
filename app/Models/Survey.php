@@ -17,6 +17,16 @@ class Survey extends Model
         'tanggal_survey',
         'foto_survey',
         'unit_role',
+        // Kolom baru
+        'petugas_survey_id',
+        'koordinat_survey',
+        'hasil_survey',
+        'gambar_survey',
+        'kebutuhan_jutr',
+        'kebutuhan_trafo',
+        'kebutuhan_jutm',
+        'detail_kebutuhan',
+        'keterangan',
     ];
 
     /**
@@ -25,5 +35,13 @@ class Survey extends Model
     public function permohonan(): BelongsTo
     {
         return $this->belongsTo(Permohonan::class);
+    }
+
+    /**
+     * Mendapatkan data petugas (employee) yang melakukan survei.
+     */
+    public function petugasSurvey(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class, 'petugas_survey_id');
     }
 }

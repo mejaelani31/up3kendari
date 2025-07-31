@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Survey;
 
+use App\Models\Employee;
 use App\Models\Permohonan;
 use App\Models\Survey;
 use Carbon\Carbon;
@@ -17,9 +18,20 @@ class Form extends Component
     public Permohonan $permohonan;
     public Survey $survey;
 
-    public $no_survey;
-    public $tanggal_survey;
-    public $foto_survey;
+    // Properti Form
+    public $no_survey, $tanggal_survey, $foto_survey, $petugas_survey_id, $koordinat_survey,
+           $hasil_survey, $gambar_survey, $kebutuhan_jutr, $kebutuhan_trafo,
+           $kebutuhan_jutm, $detail_kebutuhan, $keterangan;
+
+    // Opsi untuk dropdown
+    public $opsiHasilSurvey = [
+        'LAYAK SAMBUNG',
+        'PERLUASAN JUTR',
+        'UPRATING TRAFO',
+        'PERLUASAN JUTR DAN UPRATING TRAFO',
+        'SISIP TRAFO',
+        'PERLUASAN JUTM',
+    ];
 
     public function mount(Permohonan $permohonan, Survey $survey = null)
     {
@@ -27,10 +39,12 @@ class Form extends Component
         $this->survey = $survey ?: new Survey();
 
         if ($this->survey->exists) {
-            $this->no_survey = $this->survey->no_survey;
-            $this->tanggal_survey = $this->survey->tanggal_survey;
+            $this->fill($this->survey->only([
+                'no_survey', 'tanggal_survey', 'petugas_survey_id', 'koordinat_survey',
+                'hasil_survey', 'kebutuhan_jutr', 'kebutuhan_trafo', 'kebutuhan_jutm',
+                'detail_kebutuhan', 'keterangan'
+            ]));
         } else {
-            // Generate data untuk survei baru
             $this->tanggal_survey = now()->format('Y-m-d');
             $this->no_survey = $this->generateSurveyNumber();
         }
@@ -57,7 +71,16 @@ class Form extends Component
         return [
             'no_survey' => 'required|string|unique:surveys,no_survey,' . $this->survey->id,
             'tanggal_survey' => 'required|date',
+            'petugas_survey_id' => 'required|exists:employees,id',
+            'koordinat_survey' => 'nullable|string|max:100',
+            'hasil_survey' => 'required|string',
             'foto_survey' => 'nullable|image|max:2048',
+            'gambar_survey' => 'nullable|mimes:pdf|max:5120',
+            'kebutuhan_jutr' => 'required_if:hasil_survey,PERLUASAN JUTR|required_if:hasil_survey,PERLUASAN JUTR DAN UPRATING TRAFO|nullable|integer',
+            'kebutuhan_trafo' => 'required_if:hasil_survey,UPRATING TRAFO|required_if:hasil_survey,PERLUASAN JUTR DAN UPRATING TRAFO|required_if:hasil_survey,SISIP TRAFO|nullable|integer',
+            'kebutuhan_jutm' => 'required_if:hasil_survey,PERLUASAN JUTM|nullable|integer',
+            'detail_kebutuhan' => 'nullable|string',
+            'keterangan' => 'nullable|string',
         ];
     }
 
@@ -65,26 +88,25 @@ class Form extends Component
     {
         $dataToSave = $this->validate();
 
-        $dataToSave = collect($dataToSave)->except(['foto_survey'])->toArray();
-
         if ($this->foto_survey) {
             if ($this->survey->foto_survey) Storage::disk('public')->delete($this->survey->foto_survey);
-
-            $idPermohonan = $this->permohonan->id;
-            $namaFoto = "SURVEY_{$idPermohonan}_{$this->no_survey}." . $this->foto_survey->extension();
-            $dataToSave['foto_survey'] = $this->foto_survey->storeAs('surveys', $namaFoto, 'public');
+            $namaFoto = "SURVEY_FOTO_{$this->no_survey}." . $this->foto_survey->extension();
+            $dataToSave['foto_survey'] = $this->foto_survey->storeAs('surveys/foto', $namaFoto, 'public');
+        }
+        
+        if ($this->gambar_survey) {
+            if ($this->survey->gambar_survey) Storage::disk('public')->delete($this->survey->gambar_survey);
+            $namaGambar = "SURVEY_GAMBAR_{$this->no_survey}." . $this->gambar_survey->extension();
+            $dataToSave['gambar_survey'] = $this->gambar_survey->storeAs('surveys/gambar', $namaGambar, 'public');
         }
 
         if ($this->survey->exists) {
             $this->survey->update($dataToSave);
         } else {
-            // Isi data relasi dan hak akses untuk survei baru
             $dataToSave['permohonan_id'] = $this->permohonan->id;
             $dataToSave['unit_role'] = $this->permohonan->unit_role;
             Survey::create($dataToSave);
-
-            // Update status di tabel permohonan induknya
-            $this->permohonan->update(['status_survey' => '10 : Survey Selesai']);
+            $this->permohonan->update(['status_survey' => '10: Survey Selesai']);
         }
         
         session()->flash('success', 'Data survei berhasil disimpan.');
@@ -94,6 +116,13 @@ class Form extends Component
 
     public function render()
     {
-        return view('livewire.survey.form');
+        // Ambil daftar karyawan yang berada di bawah unit_role permohonan
+        $petugasOptions = Employee::where('unit_role', 'like', $this->permohonan->unit_role . '%')
+                                  ->orderBy('nama')
+                                  ->get();
+
+        return view('livewire.survey.form', [
+            'petugasOptions' => $petugasOptions
+        ]);
     }
 }
