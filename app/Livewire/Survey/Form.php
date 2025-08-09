@@ -23,15 +23,15 @@ class Form extends Component
     public $no_survey, $tanggal_survey, $foto_survey, $petugas_survey_id, $koordinat_survey,
            $hasil_survey, $gambar_survey, $kebutuhan_jutr, $kebutuhan_trafo,
            $kebutuhan_jutm, $detail_kebutuhan, $keterangan;
+           
+    // Properti baru
+    public $trafo_existing, $tanggal_ukur_trafo_existing, $beban_trafo_existing,
+           $hasil_ukur_r, $hasil_ukur_s, $hasil_ukur_t, $hasil_ukur_n, $hasil_ukur_v;
 
     // Opsi untuk dropdown
     public $opsiHasilSurvey = [
-        'LAYAK SAMBUNG',
-        'PERLUASAN JUTR',
-        'UPRATING TRAFO',
-        'PERLUASAN JUTR DAN UPRATING TRAFO',
-        'SISIP TRAFO',
-        'PERLUASAN JUTM',
+        'LAYAK SAMBUNG', 'PERLUASAN JUTR', 'UPRATING TRAFO',
+        'PERLUASAN JUTR DAN UPRATING TRAFO', 'SISIP TRAFO', 'PERLUASAN JUTM',
     ];
 
     public function mount(Permohonan $permohonan, Survey $survey = null)
@@ -43,10 +43,12 @@ class Form extends Component
             $this->fill($this->survey->only([
                 'no_survey', 'tanggal_survey', 'petugas_survey_id', 'koordinat_survey',
                 'hasil_survey', 'kebutuhan_jutr', 'kebutuhan_trafo', 'kebutuhan_jutm',
-                'detail_kebutuhan', 'keterangan'
+                'detail_kebutuhan', 'keterangan', 'trafo_existing', 'tanggal_ukur_trafo_existing',
+                'beban_trafo_existing', 'hasil_ukur_r', 'hasil_ukur_s', 'hasil_ukur_t', 'hasil_ukur_n', 'hasil_ukur_v'
             ]));
         } else {
             $this->tanggal_survey = now()->format('Y-m-d');
+            $this->tanggal_ukur_trafo_existing = now()->format('Y-m-d');
             $this->no_survey = $this->generateSurveyNumber();
         }
     }
@@ -82,6 +84,14 @@ class Form extends Component
             'kebutuhan_trafo' => 'required_if:hasil_survey,UPRATING TRAFO|required_if:hasil_survey,PERLUASAN JUTR DAN UPRATING TRAFO|required_if:hasil_survey,SISIP TRAFO|required_if:hasil_survey,PERLUASAN JUTM|nullable|integer',
             'kebutuhan_jutm' => 'required_if:hasil_survey,PERLUASAN JUTM|nullable|integer',
             'keterangan' => 'nullable|string',
+            'trafo_existing' => 'nullable|string|max:255',
+            'tanggal_ukur_trafo_existing' => 'nullable|date',
+            'beban_trafo_existing' => 'nullable|numeric', // <-- Ubah ke numeric
+            'hasil_ukur_r' => 'nullable|numeric',
+            'hasil_ukur_s' => 'nullable|numeric',
+            'hasil_ukur_t' => 'nullable|numeric',
+            'hasil_ukur_n' => 'nullable|numeric', // <-- Tambahkan ini
+            'hasil_ukur_v' => 'nullable|numeric',
         ];
     }
 

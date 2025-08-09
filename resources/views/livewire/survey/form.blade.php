@@ -75,6 +75,54 @@
             <textarea id="keterangan" wire:model="keterangan" rows="3" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 rounded-md shadow-sm" placeholder="Contoh: Tidak Bisa Tiang Beton, Dll ..."></textarea>
         </div>
 
+        <!-- Baris Pertama Pengukuran -->
+        <div class="col-span-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+                <x-label for="trafo_existing" value="{{ __('Trafo Existing / Terdekat') }}" />
+                <x-input id="trafo_existing" type="text" class="mt-1 block w-full" wire:model="trafo_existing" />
+                <x-input-error for="trafo_existing" class="mt-2" />
+            </div>
+            <div>
+                <x-label for="tanggal_ukur_trafo_existing" value="{{ __('Tanggal Ukur') }}" />
+                <x-input id="tanggal_ukur_trafo_existing" type="date" class="mt-1 block w-full" wire:model="tanggal_ukur_trafo_existing" />
+                <x-input-error for="tanggal_ukur_trafo_existing" class="mt-2" />
+            </div>
+            <div>
+                <x-label for="beban_trafo_existing" value="{{ __('Beban Trafo (%)') }}" />
+                <x-input id="beban_trafo_existing" type="number" step="0.01" class="mt-1 block w-full" wire:model="beban_trafo_existing" />
+                <x-input-error for="beban_trafo_existing" class="mt-2" />
+            </div>
+        </div>
+
+        <!-- Baris Kedua Pengukuran -->
+        <div class="col-span-6 grid grid-cols-1 sm:grid-cols-5 gap-4">
+            <div>
+                <x-label for="hasil_ukur_r" value="{{ __('Beban R (A)') }}" />
+                <x-input id="hasil_ukur_r" type="number" step="0.01" class="mt-1 block w-full" wire:model="hasil_ukur_r" />
+                <x-input-error for="hasil_ukur_r" class="mt-2" />
+            </div>
+            <div>
+                <x-label for="hasil_ukur_s" value="{{ __('Beban S (A)') }}" />
+                <x-input id="hasil_ukur_s" type="number" step="0.01" class="mt-1 block w-full" wire:model="hasil_ukur_s" />
+                <x-input-error for="hasil_ukur_s" class="mt-2" />
+            </div>
+            <div>
+                <x-label for="hasil_ukur_t" value="{{ __('Beban T (A)') }}" />
+                <x-input id="hasil_ukur_t" type="number" step="0.01" class="mt-1 block w-full" wire:model="hasil_ukur_t" />
+                <x-input-error for="hasil_ukur_t" class="mt-2" />
+            </div>
+            <div>
+                <x-label for="hasil_ukur_n" value="{{ __('Beban N (A)') }}" />
+                <x-input id="hasil_ukur_n" type="number" step="0.01" class="mt-1 block w-full" wire:model="hasil_ukur_n" />
+                <x-input-error for="hasil_ukur_n" class="mt-2" />
+            </div>
+            <div>
+                <x-label for="hasil_ukur_v" value="{{ __('Tegangan (V)') }}" />
+                <x-input id="hasil_ukur_v" type="number" step="0.01" class="mt-1 block w-full" wire:model="hasil_ukur_v" />
+                <x-input-error for="hasil_ukur_v" class="mt-2" />
+            </div>
+        </div>
+
         <!-- Upload Berkas -->
         <div class="col-span-6">
             <x-label for="foto_survey" value="{{ __('Foto Hasil Survei (JPG/PNG)') }}" />

@@ -68,6 +68,44 @@
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Keterangan</dt>
                             <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 whitespace-pre-wrap">{{ $survey->keterangan ?? '-' }}</dd>
                         </div>
+                        
+                        <!-- Data Pengukuran Trafo -->
+                        <div class="md:col-span-2 pt-6">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 border-b border-gray-200 dark:border-gray-700 pb-2">Data Pengukuran Trafo</h3>
+                        </div>
+                        <div class="lg:col-span-2">
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Trafo Existing / Terdekat</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->trafo_existing ?? '-' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Tanggal Ukur</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->tanggal_ukur_trafo_existing ? \Carbon\Carbon::parse($survey->tanggal_ukur_trafo_existing)->isoFormat('DD MMMM YYYY') : '-' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Beban Trafo</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->beban_trafo_existing ? $survey->beban_trafo_existing . ' %' : '-' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Beban R</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->hasil_ukur_r ? $survey->hasil_ukur_r . ' A' : '-' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Beban S</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->hasil_ukur_s ? $survey->hasil_ukur_s . ' A' : '-' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Beban T</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->hasil_ukur_t ? $survey->hasil_ukur_t . ' A' : '-' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Beban N</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->hasil_ukur_n ? $survey->hasil_ukur_n . ' A' : '-' }}</dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Tegangan</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ $survey->hasil_ukur_v ? $survey->hasil_ukur_v . ' V' : '-' }}</dd>
+                        </div>
+                        
 
                         <!-- Lampiran -->
                         @if ($survey->foto_survey || $survey->gambar_survey)
